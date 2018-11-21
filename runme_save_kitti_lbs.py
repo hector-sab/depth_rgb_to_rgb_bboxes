@@ -5,7 +5,7 @@ import utils as ut
 
 def save_bbox2file(path,bboxes):
     # [x_left,y_top,x_right,y_bottom]
-    line = 'person 0 0 0 {} {} {} {} 0 0 0 0 0 0 0 0'
+    line = 'person 0.0 0 0.0 {} {} {} {} 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0'
     if len(bboxes)>0:
         with open(path,'w') as f:
             for i,bbox in enumerate(bboxes):

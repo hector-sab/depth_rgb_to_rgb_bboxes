@@ -4,9 +4,9 @@ from tqdm import tqdm
 
 import utils as ut
 
-
 if __name__=='__main__':
-    path = 'ims/'
+    dir_ = '/data/HectorSanchez/database/PeopleCounter/camara1/'
+    path = dir_+'00000002/'
     generator = ut.BboxGenerator()
     generator.set_bg(mpath='mean_bg.npy',spath='std_bg.npy')
     bboxes,fnames = generator.get_bboxes(path=path,return_fnames=True)

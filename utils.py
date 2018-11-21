@@ -46,7 +46,12 @@ class FindPeople:
         pbar = tqdm(range(len(self.files)))
         for i in pbar:
             im = cv2.imread(self.folder+self.files[i])
-            im = cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
+            try:
+                im = cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
+            except Exception as e:
+                print('--->',self.folder+self.files[i])
+                input('Error')
+
             im = cv2.resize(im,None,fx=0.5,fy=0.5)
 
             if not i:
@@ -187,9 +192,16 @@ class BboxGenerator:
         
         print('Calculating Bounding Boxs...')
         pbar = tqdm(range(len(dfnames)))
+        ind2del = [] # fnames to be deleted
         for i in pbar:
             dfname = dfnames[i]
-            dim = load_dim2dpt(path+dfname)
+            try:
+                dim = load_dim2dpt(path+dfname)
+            except Exception as e:
+                # In case this image is not procesed, delet it
+                print('---->Error with:',path+dfname)
+                ind2del.append(i)
+                continue
 
             mask = np.logical_and(dim<=self.up_mask,dim>=self.lo_mask)
             mask = np.logical_not(mask)
@@ -210,6 +222,10 @@ class BboxGenerator:
             # the noise sourse
             bboxes = select_bboxes_inside_area(bboxes)
             all_bboxes.append(bboxes)
+
+        if len(ind2del)>0:
+            for i in ind2del[::-1]:
+                del fnames[i]
 
         if return_fnames:
             return(all_bboxes,fnames)

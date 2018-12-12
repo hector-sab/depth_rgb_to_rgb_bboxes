@@ -24,15 +24,15 @@ def create_lbs(fnames,bboxes,out_dir):
 
 if __name__=='__main__':
     # For single folder
-    if False:
-        dir_ = '/data/HectorSanchez/database/PeopleCounter/camara1/00000024/'
-        out_dir = '/data/HectorSanchez/database/PeopleCounter/camara1_lbs/00000024/'
+    if True:
+        dir_ = '/data/HectorSanchez/database/PeopleCounter/camara1/00000133/'
+        out_dir = '/data/HectorSanchez/database/PeopleCounter/camara1_lbs/00000133/'
 
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
 
         generator = ut.BboxGenerator()
-        generator.set_bg(mpath='mean_bg.npy',spath='std_bg.npy')
+        generator.set_bg(mpath='mean_bg_00000126.npy',spath='std_bg_00000126.npy')
         bboxes,fnames = generator.get_bboxes(path=dir_,return_fnames=True)
 
         create_lbs(fnames,bboxes,out_dir)
@@ -46,7 +46,7 @@ if __name__=='__main__':
         generator = ut.BboxGenerator()
         generator.set_bg(mpath='mean_bg.npy',spath='std_bg.npy')
 
-        for i in range(82,len(folders)):
+        for i in range(101,len(folders)):
             folder = folders[i]
             print(folder)
             path_dir = main_dir+folder+'/'

@@ -211,6 +211,11 @@ class BboxGenerator:
             mask = cv2.erode(mask.astype(np.uint8),kernel,iterations=2)
             mask = cv2.dilate(mask,kernel,iterations=2)
 
+            ### S: TMP
+            #plt.imshow(mask)
+            #plt.show()
+            ### E: TMP
+
             # Blob detection
             blob_lbs = find_blobs(mask)
             blob_lbs = filter_blobs(blob_lbs,min=3200)

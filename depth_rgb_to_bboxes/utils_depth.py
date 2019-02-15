@@ -296,9 +296,9 @@ def blobs_to_bboxes(blobs,xyz=None,dx=0,dy=0,fx=1,fy=1):
 				#dx = 30
 				#fx = 0.9
 				#fy = 1
-				y_min = (np.min(y_ind) + dy)*fy
+				y_min = np.min(y_ind) + dy
 				y_max = (np.max(y_ind) + dy)*fy
-				x_min = (np.min(x_ind) + dx)*fx
+				x_min = np.min(x_ind) + dx
 				x_max = (np.max(x_ind) + dx)*fx
 				bboxes.append([x_min,y_min,x_max,y_max])
 	
@@ -310,6 +310,96 @@ def blobs_to_bboxes(blobs,xyz=None,dx=0,dy=0,fx=1,fy=1):
 	bboxes = bboxes.astype(np.int32)
 	return(bboxes)
 
+class BBoxGenerator:
+	def __init__(self):
+		self.bg_remover = BackgroundRemover()
+		self.translation_m = np.array([0,0,0])
+		self.rotation_m = np.array([[1,0,0],
+		                            [0,1,0],
+		                            [0,0,1]])
+		self.fl = None
+		self.pp = None
+
+	def set_background(self,mpath,spath):
+		self.bg_remover.set_background(mpath,spath)
+
+	def set_translation_matrix(self,matrix):
+		self.translation_m = matrix
+
+	def set_rotation_matrix(self,matrix):
+		self.rotation_m = matrix
+
+	def set_focal_lenght(self,fl):
+		self.fl = fl
+
+	def set_principal_point(self,pp):
+		self.pp = pp
+
+	def determine_bboxes(self,dim,dx=0,dy=0,fx=1,fy=1):
+		"""
+		returns bboxes
+		"""
+		if self.fl is not None and self.pp is not None:
+			x,y = projection_correction(dim,self.fl,self.pp)
+
+			# Translate
+			x += self.translation_m[0]
+			y += self.translation_m[1]
+			dim += self.translation_m[2]
+
+			xyz = np.zeros((np.size(x),3))
+			self.xyz = xyz
+			xyz[:,0] = np.reshape(x,-1)
+			xyz[:,1] = np.reshape(y,-1)
+			xyz[:,2] = np.reshape(dim,-1)
+
+			# Rotation
+			xyz = np.dot(xyz,self.rotation_m)
+
+			# Reproyect
+			us = np.zeros((307200))
+			vs = np.zeros((307200))
+
+			## Calculate new X,Y position in the image
+			us = (xyz[:,0]/xyz[:,2])*self.fl[0] + self.pp[0]
+			vs = (xyz[:,1]/xyz[:,2])*self.fl[1] + self.pp[1]
+			
+			us = us.astype(np.int32)
+			vs = vs.astype(np.int32)
+
+			x_min = np.amin(us)
+			x_max = np.amax(us)
+			y_min = np.amin(vs)
+			y_max = np.amax(vs)
+
+			#dim = np.zeros((y_max-y_min,x_max-x_min))
+			dim = np.zeros((480,640))
+			us -= x_min
+			vs -= y_min
+
+			us_mask = np.logical_and(us>=0,us<640)
+			vs_mask = np.logical_and(vs>=0,vs<480)
+
+			mask = np.logical_and(us_mask,vs_mask)
+
+			us = us[mask]
+			vs = vs[mask]
+			zs = xyz[:,2][mask.reshape(-1)]
+			dim[vs,us] = zs
+
+		# Obtain mask with no background
+		mask = self.bg_remover.remove_background(dim)
+		self.mask = mask
+		mask_bool = mask.astype(np.bool)
+
+		# Find Blobs
+		blobs = find_blobs(mask)
+		blobs = filter_blobs(blobs,min=5000)
+
+		# Get bboxes
+		bboxes = blobs_to_bboxes(blobs,dx=dx,dy=dy,fx=fx,fy=fy)		
+
+		return(bboxes)
 
 if __name__=='__main__':
 	# List all files on the directory

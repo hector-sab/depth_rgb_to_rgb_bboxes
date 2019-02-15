@@ -105,6 +105,7 @@ venv.bak/
 
 # Ignore folders. HSB
 ims/
+ims_lbs/
 lbs/
 
 # Ignor numpy npy files

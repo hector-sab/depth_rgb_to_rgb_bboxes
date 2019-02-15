@@ -12,7 +12,28 @@ from depth_rgb_to_bboxes import utils_depth as udp
 import cv2
 import numpy as np
 import open3d as o3d
+from tqdm import tqdm
 import matplotlib.pyplot as plt
+
+
+def save_bbox2file(path,bboxes):
+	# [x_left,y_top,x_right,y_bottom]
+	line = 'person 0.0 0 0.0 {} {} {} {} 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0'
+	if len(bboxes)>0:
+		with open(path,'w') as f:
+			for i,bbox in enumerate(bboxes):
+				f.write(line.format(bbox[0],bbox[1],bbox[2],bbox[3]))
+				if i<len(bboxes)-1:
+					f.write('\n')
+
+def create_lbs(fnames,bboxes,out_dir):
+	print('Creating labels...')
+	pbar = tqdm(range(len(fnames)))
+	for i in pbar:
+		fname = fnames[i]
+		im_bboxes = bboxes[i]
+		
+		save_bbox2file(out_dir+fname[:-3]+'txt',im_bboxes)
 
 
 rot = [[0.99966,-0.00676,0.02532],
@@ -33,10 +54,6 @@ if __name__=='__main__':
 	mpath = os.path.join(mean_std_dir,'bg_camera1_mean.npy')
 	spath = os.path.join(mean_std_dir,'bg_camera1_std.npy')
 
-	# Prepare object that removes the background
-	bg_remover = udp.BackgroundRemover()
-	bg_remover.set_background(mpath,spath)
-
 	# Get all the depth images
 	fdir = '../ims/'
 	files = sorted(os.listdir(fdir))
@@ -50,63 +67,16 @@ if __name__=='__main__':
 	bb_generator.set_focal_lenght(np.array(fl))
 	bb_generator.set_principal_point(np.array(pp))
 	
+	out_dir = '../ims_lbs/'
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+		
 	for file in files:
 		print('--->',file)
-		
 		fim = file.replace('depth','color')
 		fim = fim.replace('png','jpg')
-		im = cv2.imread(fdir+fim)
 
-		
 		dim = udp.load_dim(fdir+file)
-		x,y = udp.projection_correction(dim)
+		bboxes = bb_generator.determine_bboxes(dim,dx=-10,dy=30,fx=1,fy=1)
 
-		bboxes_test = bb_generator.determine_bboxes(dim,dx=-10,dy=30,fx=1,fy=1)
-		
-		# Show mask in im
-		im = im + np.expand_dims(bb_generator.mask,axis=-1)*100
-
-		for bbox in bboxes_test:
-			im = cv2.rectangle(im,pt1=(bbox[0],bbox[1]),pt2=(bbox[2],bbox[3]),color=(0,0,255),
-			thickness=3)
-
-
-
-		fig1,ax1 = plt.subplots()
-		ax1.imshow(im[...,::-1])
-		#fig2,ax2 = plt.subplots()
-		#ax2.imshow(mask)
-		plt.show()
-		#plt.pause(0.2)
-		plt.close(fig1)
-		#plt.close(fig2)
-
-
-		if len(y)==0:
-			# No points found
-			continue
-		
-		if False:
-			# Plot with open3d
-			xyz = np.zeros((np.size(x),3))
-			xyz[:,0] = np.reshape(x,-1)
-			xyz[:,1] = np.reshape(y,-1)
-			xyz[:,2] = np.reshape(dim,-1)
-			pcd = o3d.PointCloud()
-			pcd.points = o3d.Vector3dVector(xyz)
-
-			o3d.draw_geometries([pcd])
-		if False:
-			fig = plt.figure()
-			ax = fig.gca(projection='3d')
-			ax.set_aspect('equal')
-			#surf = ax.plot_surface(x,y,dim,cmap='gray')
-			#surf = ax.plot_trisurf(x,y,dim,cmap='gray')
-			ax.scatter(x,y,dim)
-
-			# Invert z axis
-			plt.gca().invert_zaxis()
-			# Maximaze window
-			plt.get_current_fig_manager().window.showMaximized()
-			plt.show()
-			plt.close(fig)
+		create_lbs([fim],[bboxes],out_dir)

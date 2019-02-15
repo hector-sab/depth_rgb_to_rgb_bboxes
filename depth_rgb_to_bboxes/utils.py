@@ -174,8 +174,8 @@ class BboxGenerator:
         mask = hist>pval
         self.bg_std[mask] = (pval/255)*vmax
 
-        self.up_mask = self.bg_mean+self.bg_std*4
-        self.lo_mask = self.bg_mean-self.bg_std*4
+        self.up_mask = self.bg_mean+self.bg_std*2
+        self.lo_mask = self.bg_mean-self.bg_std*2
         
     def get_bboxes(self,path,return_fnames=False,reset=True):
         # Returns the bboxes in a list of arrays of shape [None,4]

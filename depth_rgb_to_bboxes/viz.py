@@ -6,12 +6,25 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 def load_dim(path):
+    """
+    Loads depth image
+    """
     im = cv2.imread(path,-1)
     im = im.astype(np.float32)
-    im[im>=2047] = 0
+
+    mask = im>=2047
+
+    # Preprocessing to remove noise
+    im = cv2.inpaint(im,mask.astype(np.uint8),3,cv2.INPAINT_TELEA)
+    #im = im[1:-1,1:-1]
+
+    #im[im>=2047] = 0
 
     # Convert from disparity to Depth
-    dim = 1000/(-0.0024*im + 3.15)
+    # Parameters for camera 1
+    param1 = 3.12
+    param2 = -0.002868
+    dim = 1000/(param2*im + param1)
     return(dim)
 
 def plot3d(path,scale=1):
@@ -26,7 +39,29 @@ def plot3d(path,scale=1):
     #x = x.reshape(-1,1)
     #y = y.reshape(-1,1)
     #z = im.reshape(-1,1)
+
+    ##### Tries to fix projection 
+    if True:
+        # Camera 1 parameters
+        fl = [583.87,582.29] # Focal Length [Horizontal,Verticla]
+        pp = [228.75,329.44] # Principal Point. Center of the camera. [Horizontal,Verticla]
+        x = z*(x-pp[1])/fl[1]
+        y = z*(y-pp[0])/fl[0]
+        #x = x.astype(np.int32)
+        #y = y.astype(np.int32)
+    #####
+
+    # Scale
     z = scale*z
+
+    # For displaying it correctly
+    #argmax = np.argmax(z)
+    #z = argmax - z
+
+    # Remove first row col of pixels to remove noise
+    x = x[1:-1,1:-1]
+    y = y[1:-1,1:-1]
+    z = z[1:-1,1:-1]
     
     fig = plt.figure()
     ax = fig.gca(projection='3d')
@@ -36,6 +71,11 @@ def plot3d(path,scale=1):
         surf = ax.plot_surface(x,y,z,cmap='gray')
     else:
         ax.scatter(x,y,z)
+
+    # Invert z axis
+    plt.gca().invert_zaxis()
+    # Maximaze window
+    plt.get_current_fig_manager().window.showMaximized()
     plt.show()
 
 def plot2d_heat(dir_,fname):

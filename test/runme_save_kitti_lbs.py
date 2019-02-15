@@ -1,7 +1,12 @@
 import os
+fdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+import sys
+sys.path.insert(0,fdir)
+
 from tqdm import tqdm
 
-import utils as ut
+from depth_rgb_to_bboxes import utils as ut
 
 def save_bbox2file(path,bboxes):
     # [x_left,y_top,x_right,y_bottom]

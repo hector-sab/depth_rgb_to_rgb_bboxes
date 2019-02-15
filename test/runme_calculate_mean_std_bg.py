@@ -1,13 +1,19 @@
 # Calculates the mean and standard deviation of the background
+import os
+fdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+import sys
+sys.path.insert(0,fdir)
+
 import cv2
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-import utils as ut
+from depth_rgb_to_bboxes import utils as ut
 
 if __name__=='__main__':
-    path = 'ims/'
+    path = '../ims/'
     sims = ut.FindPeople()
     sims.runme(path,alpha=0.98)
     
@@ -35,5 +41,5 @@ if __name__=='__main__':
     bk_mean = np.mean(all_dims,axis=-1) # Mean Background
     bk_std = np.std(all_dims,axis=-1) # Std dev Background
 
-    np.save('mean_bg.npy',bk_mean)
-    np.save('std_bg.npy',bk_std) 
+    np.save('../mean_bg.npy',bk_mean)
+    np.save('../std_bg.npy',bk_std) 

@@ -1,12 +1,19 @@
+# Calculates the mean and standard deviation of the background
+import os
+fdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+import sys
+sys.path.insert(0,fdir)
+
 import cv2
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-import utils as ut
+from depth_rgb_to_bboxes import utils as ut
 
 if __name__=='__main__':
-    dir_ = '/data/HectorSanchez/database/PeopleCounter/camara1/'
-    path = dir_+'00000002/'
+    dir_ = './'
+    path = dir_+'ims/'
     generator = ut.BboxGenerator()
     generator.set_bg(mpath='mean_bg.npy',spath='std_bg.npy')
     bboxes,fnames = generator.get_bboxes(path=path,return_fnames=True)

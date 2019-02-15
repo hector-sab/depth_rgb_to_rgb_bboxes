@@ -107,6 +107,7 @@ venv.bak/
 ims/
 ims_lbs/
 lbs/
+*.npy
 
 # Ignor numpy npy files
 *.npy

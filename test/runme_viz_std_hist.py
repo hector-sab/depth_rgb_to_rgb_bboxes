@@ -8,8 +8,25 @@ if __name__=='__main__':
         plt.imshow(bg_mean)
         plt.show()
 
+        ### 3D mean
+        from mpl_toolkits.mplot3d import Axes3D
+        X,Y = np.meshgrid(np.arange(bg_mean.shape[1]),
+                np.arange(bg_mean.shape[0]))
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        ax.plot_surface(X,Y,bg_mean,cmap='ocean')
+        plt.show()
+        ###
+
         plt.imshow(bg_std)
         plt.show()
+
+        ### 3D std
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        ax.plot_surface(X,Y,bg_std,cmap='ocean')
+        plt.show()
+        ###
 
         # For histogram
         vmax = np.max(bg_std)

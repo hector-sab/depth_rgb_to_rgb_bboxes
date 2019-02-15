@@ -389,8 +389,19 @@ class BBoxGenerator:
 
 		# Obtain mask with no background
 		mask = self.bg_remover.remove_background(dim)
+		
+
+		###
+		# Filter objects in the floor
+		h_limit = 120
+		above_mask = np.copy(mask)
+		above_mask[h_limit:] = dim[h_limit:]<2700
+		mask = np.logical_and(mask,above_mask)
+		mask = mask.astype(np.uint8)
+		###
+		#print(mask.dtype)
+
 		self.mask = mask
-		mask_bool = mask.astype(np.bool)
 
 		# Find Blobs
 		blobs = find_blobs(mask)

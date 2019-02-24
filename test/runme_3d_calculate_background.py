@@ -16,12 +16,13 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 if __name__=='__main__':
-	fdir = '../ims/'
+	#fdir = '../ims/'
+	fdir = '/data/HectorSanchez/database/PeopleCounter/camara1/00000025/'
 	bg_extractor = udp.FindBackgroundDepth()
 
 	bg_extractor.calculate_sim(fdir)
 	bg_extractor.determine_background(.748)
-	#bg_extractor.ssim_chart()
+	bg_extractor.ssim_chart()
 	print('--->',len(bg_extractor.background_fnames))
 
 	if False:
@@ -56,11 +57,12 @@ if __name__=='__main__':
 	npy_out_dir = os.path.join(npy_out_dir,'mean_std','camera1')
 
 	if not os.path.exists(npy_out_dir):
-		print('HERE')
 		os.makedirs(npy_out_dir)
 
-	np.save(os.path.join(npy_out_dir,'bg_camera1_mean.npy'),bg_mean)
-	np.save(os.path.join(npy_out_dir,'bg_camera1_std.npy'),bg_std)
+	if False:
+		# Save mean and std dev
+		np.save(os.path.join(npy_out_dir,'bg_camera1_mean.npy'),bg_mean)
+		np.save(os.path.join(npy_out_dir,'bg_camera1_std.npy'),bg_std)
 	
 	if False:
 		# Display mean and std dev

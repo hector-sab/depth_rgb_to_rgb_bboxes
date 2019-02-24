@@ -38,9 +38,10 @@ if __name__=='__main__':
 	bg_remover.set_background(mpath,spath)
 
 	# Get all the depth images
-	fdir = '../ims/'
+	#fdir = '../ims/'
+	fdir = '/data/HectorSanchez/database/PeopleCounter/camara1/00000025/'
 	files = sorted(os.listdir(fdir))
-	files = [x for i,x in enumerate(files) if '.png' in x and i>45]
+	files = [x for i,x in enumerate(files) if '.png' in x and i>100]
 
 	# This is the only thing needed
 	bb_generator = udp.BBoxGenerator()
@@ -72,13 +73,13 @@ if __name__=='__main__':
 
 
 
-		fig1,ax1 = plt.subplots()
-		ax1.imshow(im[...,::-1])
+		#fig1,ax1 = plt.subplots()
+		#ax1.imshow(im[...,::-1])
 		#fig2,ax2 = plt.subplots()
 		#ax2.imshow(mask)
-		plt.show()
+		#plt.show()
 		#plt.pause(0.2)
-		plt.close(fig1)
+		#plt.close(fig1)
 		#plt.close(fig2)
 
 
@@ -86,7 +87,7 @@ if __name__=='__main__':
 			# No points found
 			continue
 		
-		if False:
+		if True:
 			# Plot with open3d
 			xyz = np.zeros((np.size(x),3))
 			xyz[:,0] = np.reshape(x,-1)
@@ -96,6 +97,7 @@ if __name__=='__main__':
 			pcd.points = o3d.Vector3dVector(xyz)
 
 			o3d.draw_geometries([pcd])
+		
 		if False:
 			fig = plt.figure()
 			ax = fig.gca(projection='3d')
@@ -107,6 +109,6 @@ if __name__=='__main__':
 			# Invert z axis
 			plt.gca().invert_zaxis()
 			# Maximaze window
-			plt.get_current_fig_manager().window.showMaximized()
+			#plt.get_current_fig_manager().window.showMaximized()
 			plt.show()
 			plt.close(fig)

@@ -11,7 +11,6 @@ from depth_rgb_to_bboxes import utils_depth as udp
 
 import cv2
 import numpy as np
-import open3d as o3d
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
@@ -26,14 +25,14 @@ def save_bbox2file(path,bboxes):
 				if i<len(bboxes)-1:
 					f.write('\n')
 
-def create_lbs(fnames,bboxes,out_dir):
-	print('Creating labels...')
-	pbar = tqdm(range(len(fnames)))
-	for i in pbar:
+def create_lbs(fnames,bboxes):
+	#print('Creating labels...')
+	#pbar = tqdm(range(len(fnames)))
+	for i in range(len(fnames)):
 		fname = fnames[i]
 		im_bboxes = bboxes[i]
 		
-		save_bbox2file(out_dir+fname[:-3]+'txt',im_bboxes)
+		save_bbox2file(fname[:-3]+'txt',im_bboxes)
 
 
 rot = [[0.99966,-0.00676,0.02532],
@@ -54,31 +53,41 @@ if __name__=='__main__':
 	mpath = os.path.join(mean_std_dir,'bg_camera1_mean.npy')
 	spath = os.path.join(mean_std_dir,'bg_camera1_std.npy')
 
-	# Get all the depth images
-	#fdir = '../ims/'
-	fdir = '/data/HectorSanchez/database/PeopleCounter/camara1/00000025/'
-	files = sorted(os.listdir(fdir))
-	files = [x for i,x in enumerate(files) if '.png' in x and i>45]
-
-	# This is the only thing needed
 	bb_generator = udp.BBoxGenerator()
 	bb_generator.set_background(mpath,spath)
 	bb_generator.set_translation_matrix(trans)
 	bb_generator.set_rotation_matrix(rot)
 	bb_generator.set_focal_lenght(np.array(fl))
 	bb_generator.set_principal_point(np.array(pp))
-	
-	#out_dir = '../ims_lbs/'
-	out_dir = '/data/HectorSanchez/database/PeopleCounter/camara1_lbs_v2/00000025/'
-	if not os.path.exists(out_dir):
-		os.makedirs(out_dir)
-		
-	for file in files:
-		print('--->',file)
-		fim = file.replace('depth','color')
-		fim = fim.replace('png','jpg')
 
-		dim = udp.load_dim(fdir+file)
-		bboxes = bb_generator.determine_bboxes(dim,dx=-10,dy=30,fx=1,fy=1)
+	main_dir = '/data/HectorSanchez/database/PeopleCounter/'
+	# Set images folders
+	folders_dir = os.path.join(main_dir,'camara1/')
+	folders = sorted(os.listdir(folders_dir))
 
-		create_lbs([fim],[bboxes],out_dir)
+	# Set main output dir
+	main_out_dir = os.path.join(main_dir,'camara1_lbs_v2')
+
+	for i,folder in enumerate(folders):
+		print('---> Folder {} of {}: {}'.format(i+1,len(folders),folder))
+		if i<26:
+			continue
+		folder_dir = os.path.join(folders_dir,folder)
+		files = sorted(os.listdir(folder_dir))
+		files = [x for x in files if '.png' in x]
+
+		out_dir = os.path.join(main_out_dir,folder)
+		print('out_dir:',out_dir)
+		if not os.path.exists(out_dir):
+			print('YEES')
+			os.makedirs(out_dir)
+
+		pbar = tqdm(total=len(files))
+		for file in files:
+			fim = file.replace('depth','color')
+			fim = fim.replace('png','jpg')
+			dim = udp.load_dim(os.path.join(folder_dir,file))
+			bboxes = bb_generator.determine_bboxes(dim,dx=-10,dy=30,fx=1,fy=1)
+			create_lbs([os.path.join(out_dir,fim)],[bboxes])
+			pbar.update(1)
+		pbar.close()

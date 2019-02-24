@@ -22,7 +22,8 @@ if __name__=='__main__':
 	bg_remover.set_background(mpath,spath)
 
 	# Get all the depth images
-	fdir = '../ims/'
+	#fdir = '../ims/'
+	fdir = '/data/HectorSanchez/database/PeopleCounter/camara1/00000025/'
 	files = sorted(os.listdir(fdir))
 	files = [x for i,x in enumerate(files) if '.png' in x and i>35]
 
@@ -66,6 +67,9 @@ if __name__=='__main__':
 		# Show mask in im
 		#im = im + np.expand_dims(mask,axis=-1)*100
 
+		if len(bboxes)==0:
+			continue
+			
 		for bbox in bboxes:
 			im = cv2.rectangle(im,pt1=(bbox[0],bbox[1]),pt2=(bbox[2],bbox[3]),color=(0,0,255),
 			thickness=3)

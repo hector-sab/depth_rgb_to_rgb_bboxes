@@ -21,7 +21,7 @@ if __name__=='__main__':
 
 	bg_extractor.calculate_sim(fdir)
 	bg_extractor.determine_background(.748)
-	#bg_extractor.ssim_chart()
+	bg_extractor.ssim_chart()
 	print('--->',len(bg_extractor.background_fnames))
 
 	if False:

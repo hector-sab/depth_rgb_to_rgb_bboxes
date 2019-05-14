@@ -4,7 +4,7 @@
 import os
 
 if __name__=='__main__':
-	main_lbs_dir = '/data/HectorSanchez/database/PeopleCounter/camara1_lbs/'
+	main_lbs_dir = '/data/HectorSanchez/database/PeopleCounter/camara1_lbs_v2/'
 	folders = sorted(os.listdir(main_lbs_dir))
 
 	min_x_min = 0
@@ -13,12 +13,14 @@ if __name__=='__main__':
 	max_y_max = 479 # Height of the images
 
 	str_line = '{} 0.0 0 0.0 {} {} {} {} 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0'
+	total_files = 0
 	for i in range(len(folders)):
 		folder = folders[i]
 		print(folder)
 		path_dir = main_lbs_dir+folder+'/'
 		fnames = sorted(os.listdir(path_dir))
 
+		total_files += len(fnames)
 		for j in range(len(fnames)):
 			fname = fnames[j]
 
@@ -32,6 +34,7 @@ if __name__=='__main__':
 					line = oline.split(' ')
 
 					label = line[0]
+					label = 'person'
 					x_min = int(float(line[4]))
 					y_min = int(float(line[5]))
 					x_max = int(float(line[6]))
@@ -53,3 +56,4 @@ if __name__=='__main__':
 					f.write(line)
 					if i<len(flines)-1:
 						f.write('\n')
+	print('Total # of files processed:',total_files)

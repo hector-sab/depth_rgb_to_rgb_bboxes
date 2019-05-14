@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 if __name__=='__main__':
-        #bg_mean = np.load('../mean_bg.npy')
-        #bg_std = np.load('../std_bg.npy')
-        bg_mean = np.load('../mean_std/camera1/bg_camera1_mean.npy')
-        bg_std = np.load('../mean_std/camera1/bg_camera1_std.npy')
+        main_dir = '/data2/HectorSanchez/database/PeopleCounter/FINAL_RUN/camara3/mean_std/00000000/'
+
+        bg_mean = np.load(main_dir+'bg_mean.npy')
+        bg_std = np.load(main_dir+'bg_std.npy')
 	
         plt.imshow(bg_mean)
         plt.show()

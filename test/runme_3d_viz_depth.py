@@ -11,7 +11,7 @@ if __name__=='__main__':
 	import numpy as np
 
 	# List all files on the directory
-	dir_ = '../ims/'
+	dir_ = '/data/HectorSanchez/database/PeopleCounter/camara3/00000000/'
 	fpaths = sorted(os.listdir(dir_))
 
 	FLAG_FIRST_TIME = False

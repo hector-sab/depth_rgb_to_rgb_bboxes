@@ -55,7 +55,8 @@ if __name__=='__main__':
 	spath = os.path.join(mean_std_dir,'bg_camera1_std.npy')
 
 	# Get all the depth images
-	fdir = '../ims/'
+	#fdir = '../ims/'
+	fdir = '/data/HectorSanchez/database/PeopleCounter/camara1/00000025/'
 	files = sorted(os.listdir(fdir))
 	files = [x for i,x in enumerate(files) if '.png' in x and i>45]
 
@@ -67,7 +68,8 @@ if __name__=='__main__':
 	bb_generator.set_focal_lenght(np.array(fl))
 	bb_generator.set_principal_point(np.array(pp))
 	
-	out_dir = '../ims_lbs/'
+	#out_dir = '../ims_lbs/'
+	out_dir = '/data/HectorSanchez/database/PeopleCounter/camara1_lbs_v2/00000025/'
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 		

@@ -22,7 +22,8 @@ if __name__=='__main__':
 	bg_remover.set_background(mpath,spath)
 
 	# Get all the depth images
-	fdir = '../ims/'
+	#fdir = '../ims/'
+	fdir = '/data/HectorSanchez/database/PeopleCounter/camara1/00000025/'
 	files = sorted(os.listdir(fdir))
 	files = [x for i,x in enumerate(files) if '.png' in x and i>35]
 
@@ -68,28 +69,29 @@ if __name__=='__main__':
 
 		# Show mask in im
 		#im = im + np.expand_dims(mask,axis=-1)*100
-		print('---bboxes>',len(bboxes))
-		mask = np.dstack((mask,mask,mask))
-		mask *= 255
-		print(mask.shape)
+		#print('---bboxes>',len(bboxes))
+		#mask = np.dstack((mask,mask,mask))
+		#mask *= 255
+		#print(mask.shape)
 
-		if True:
+		if False:
 			for bbox in bboxes:
 				#im = cv2.rectangle(im,pt1=(bbox[0],bbox[1]),pt2=(bbox[2],bbox[3]),color=(0,0,255),
 				#thickness=3)
 				mask = cv2.rectangle(mask,pt1=(bbox[0],bbox[1]),pt2=(bbox[2],bbox[3]),color=(255,0,0),
 				thickness=3)
 
-		#fig1,ax1 = plt.subplots()
-		#ax1.imshow(im[...,::-1])
-		fig2,ax2 = plt.subplots()
-		ax2.imshow(mask)
-		#plt.show()
-		plt.axis('off')
-		plt.savefig('/home/hectorsab/Documents/Tesis/people_bboxes/'+file,bbox_inches='tight')
-		plt.pause(0.1)
-		#plt.close(fig1)
-		plt.close(fig2)
+		if False:
+			#fig1,ax1 = plt.subplots()
+			#ax1.imshow(im[...,::-1])
+			fig2,ax2 = plt.subplots()
+			ax2.imshow(mask)
+			#plt.show()
+			plt.axis('off')
+			plt.savefig('/home/hectorsab/Documents/Tesis/people_bboxes/'+file,bbox_inches='tight')
+			plt.pause(0.1)
+			#plt.close(fig1)
+			plt.close(fig2)
 
 
 		if len(y)==0:

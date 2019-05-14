@@ -34,6 +34,7 @@ if __name__=='__main__':
 					line = oline.split(' ')
 
 					label = line[0]
+					label = 'person'
 					x_min = int(float(line[4]))
 					y_min = int(float(line[5]))
 					x_max = int(float(line[6]))

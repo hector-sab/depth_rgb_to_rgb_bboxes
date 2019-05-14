@@ -17,15 +17,16 @@ import matplotlib.pyplot as plt
 
 if __name__=='__main__':
 	#fdir = '../ims/'
-	fdir = '/data/HectorSanchez/database/PeopleCounter/camara1/00000025/'
+	fdir = '/data/HectorSanchez/database/PeopleCounter/camara1/00000000/'
+	print(fdir)
 	bg_extractor = udp.FindBackgroundDepth()
 
 	bg_extractor.calculate_sim(fdir)
 	bg_extractor.determine_background(.748)
-	bg_extractor.ssim_chart()
+	#bg_extractor.ssim_chart()
 	print('--->',len(bg_extractor.background_fnames))
 
-	if False:
+	if True:
 		# Visualize background depth images
 		for file in bg_extractor.background_fnames:
 			z = udp.load_dim(fdir+file)
@@ -52,19 +53,19 @@ if __name__=='__main__':
 	bg_mean = np.mean(all_dims,axis=-1) # Mean Background
 	bg_std = np.std(all_dims,axis=-1) # Std dev Background
 	
-	# Define saving directory
-	npy_out_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-	npy_out_dir = os.path.join(npy_out_dir,'mean_std','camera1')
-
-	if not os.path.exists(npy_out_dir):
-		os.makedirs(npy_out_dir)
-
 	if False:
+		# Define saving directory
+		npy_out_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+		npy_out_dir = os.path.join(npy_out_dir,'mean_std','camera1')
+
+		if not os.path.exists(npy_out_dir):
+			os.makedirs(npy_out_dir)
+
 		# Save mean and std dev
 		np.save(os.path.join(npy_out_dir,'bg_camera1_mean.npy'),bg_mean)
 		np.save(os.path.join(npy_out_dir,'bg_camera1_std.npy'),bg_std)
 	
-	if False:
+	if True:
 		# Display mean and std dev
 		fig1,ax1 = plt.subplots()
 		ax1.set_title('Mean')

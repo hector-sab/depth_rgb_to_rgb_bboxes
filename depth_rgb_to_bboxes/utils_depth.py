@@ -7,12 +7,14 @@ from mpl_toolkits.mplot3d import Axes3D
 import skimage as sk
 from skimage.measure import compare_ssim as ssim
 
-def load_dim(path):
+def load_dim(path,M=None):
 	"""
 	Loads depth image
 
 	Args:
-	  path (str): Location of the disparity map file.
+	  - path (str): Location of the disparity map file.
+	  - M (np.ndarray): Transformation matrix for the homography.
+
 	
 	Returns;
 	  dim (np.ndarray): 3D scen contained in the disparity map file.
@@ -21,6 +23,9 @@ def load_dim(path):
 	  Make them available from function call.
 	"""
 	im = cv2.imread(path,-1)
+	#im = im[...,0]
+	if im is None:
+		print('>>>>> ',path)
 	im = im.astype(np.float32)
 
 	# Mask to identify noise
@@ -35,6 +40,9 @@ def load_dim(path):
 
 	# Convert from disparity to Depth
 	dim = 1000/(param2*im + param1)
+
+	if M is not None:
+		dim = cv2.warpPerspective(dim, M, (im.shape[1],im.shape[0]))
 	return(dim)
 
 def projection_correction(dim,fl=[583.87,582.29],pp=[228.75,329.44]):
@@ -212,8 +220,8 @@ class BackgroundRemover:
 		self.bg_mean = np.load(mpath)
 		self.bg_std = np.load(spath)
 
-		self.mask_up = self.bg_mean + self.bg_std*20
-		self.mask_lo = self.bg_mean - self.bg_std*20
+		self.mask_up = self.bg_mean + self.bg_std*1.5
+		self.mask_lo = self.bg_mean - self.bg_std*1.5
 
 	def remove_background(self,dim):
 		"""
@@ -335,8 +343,10 @@ class BBoxGenerator:
 	def set_principal_point(self,pp):
 		self.pp = pp
 
-	def determine_bboxes(self,dim,dx=0,dy=0,fx=1,fy=1):
+	def determine_bboxes(self,dim,dx=0,dy=0,fx=1,fy=1,h_lim=None):
 		"""
+		Args:
+		  - h_lim (int): height limit to be considered
 		returns bboxes
 		"""
 		if self.fl is not None and self.pp is not None:
@@ -393,11 +403,12 @@ class BBoxGenerator:
 
 		###
 		# Filter objects in the floor
-		h_limit = 120
-		above_mask = np.copy(mask)
-		above_mask[h_limit:] = dim[h_limit:]<2700
-		mask = np.logical_and(mask,above_mask)
-		mask = mask.astype(np.uint8)
+		if h_lim is not None:
+			#h_limit = 120
+			above_mask = np.copy(mask)
+			above_mask[h_lim:] = dim[h_lim:]<2700
+			mask = np.logical_and(mask,above_mask)
+			mask = mask.astype(np.uint8)
 		###
 		#print(mask.dtype)
 

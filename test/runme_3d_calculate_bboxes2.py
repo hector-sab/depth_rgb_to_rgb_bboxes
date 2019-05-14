@@ -50,7 +50,7 @@ if __name__=='__main__':
 	bb_generator.set_focal_lenght(np.array(fl))
 	bb_generator.set_principal_point(np.array(pp))
 	
-	for file in files:
+	for i,file in enumerate(files):
 		print('--->',file)
 		
 		fim = file.replace('depth','color')
@@ -74,12 +74,17 @@ if __name__=='__main__':
 
 		fig1,ax1 = plt.subplots()
 		ax1.imshow(im[...,::-1])
-		#fig2,ax2 = plt.subplots()
-		#ax2.imshow(mask)
-		plt.show()
+		ax1.axis('off')
+		fig1.savefig("/home/hectorsab/Downloads/seminario2/bbox{:04d}.png".format(i), bbox_inches='tight')
+		fig2,ax2 = plt.subplots()
+		ax2.imshow(bb_generator.mask)
+		ax2.axis('off')
+		fig2.savefig("/home/hectorsab/Downloads/seminario3/mask{:04d}.png".format(i), bbox_inches='tight')
+		
+		#plt.show()
 		#plt.pause(0.2)
 		plt.close(fig1)
-		#plt.close(fig2)
+		plt.close(fig2)
 
 
 		if len(y)==0:

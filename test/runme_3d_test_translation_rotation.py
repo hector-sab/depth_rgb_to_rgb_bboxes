@@ -29,6 +29,7 @@ if __name__=='__main__':
 	for path in fpaths:
 		if '.png' in path:
 			z = udp.load_dim(dir_+path)
+			orig_z = np.copy(z)
 			x,y = udp.projection_correction(z)
 
 			# Translate
@@ -103,6 +104,9 @@ if __name__=='__main__':
 			im = cv2.imread(dir_+fim)
 			fig2,ax2 = plt.subplots()
 			ax2.imshow(im)
+
+			fig3,ax3 = plt.subplots()
+			ax3.imshow(orig_z)
 
 			plt.show()
 

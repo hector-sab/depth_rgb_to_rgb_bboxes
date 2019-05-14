@@ -21,7 +21,7 @@ if __name__=='__main__':
 	fpaths = sorted(os.listdir(dir_))
 
 	FLAG_FIRST_TIME = False
-	for path in fpaths:
+	for i,path in enumerate(fpaths):
 		if '.png' in path:
 			print(path)
 			if not FLAG_FIRST_TIME:
@@ -36,10 +36,14 @@ if __name__=='__main__':
 				background[:,0] = np.reshape(x,-1)
 				background[:,1] = np.reshape(y,-1)
 				background[:,2] = np.reshape(z,-1)
+				FLAG_FIRST_TIME = True
 				continue
+
 
 			# Load depth image
 			z = viz.load_dim(dir_+path)
+
+			#x,y = np.meshgrid(np.arange(z.shape[1]),np.arange(z.shape[0]))
 
 			# Generates corrected projection
 			x,y = viz.projection_correction(z)
@@ -64,7 +68,11 @@ if __name__=='__main__':
 			pcd = o3d.PointCloud()
 			pcd.points = o3d.Vector3dVector(xyz)
 
-			#o3d.draw_geometries([pcd])
+			o3d.draw_geometries([pcd])
 			#x,y = np.meshgrid(np.arange(z.shape[1]),np.arange(z.shape[0]))
-			plt.imshow(z)
-			plt.show()
+			#fig,ax = plt.subplots()
+			#ax.imshow(z)
+			#plt.axis('off')
+			#plt.savefig("/home/hectorsab/Downloads/seminario/depth{:04d}.png".format(i), bbox_inches='tight')
+			#plt.close(fig)
+			#plt.show()

@@ -8,7 +8,7 @@ from depth_rgb_to_bboxes import utils_depth as udp
 
 import cv2
 import numpy as np
-import open3d as o3d
+#import open3d as o3d
 import matplotlib.pyplot as plt
 
 if __name__=='__main__':
@@ -32,6 +32,8 @@ if __name__=='__main__':
 	x_max = 1682.8418437836763
 	y_max = 1385.4591844350853
 	
+	#fig1,ax1 = plt.subplots()
+	#fig2,ax2 = plt.subplots()
 	for file in files:
 		print('--->',file)
 		
@@ -61,23 +63,33 @@ if __name__=='__main__':
 
 		blobs = udp.find_blobs(mask)
 		blobs = udp.filter_blobs(blobs,min=5000)
-		bboxes = udp.blobs_to_bboxes(blobs,dx=30,dy=40,fx=0.9,fy=1)
+		#bboxes = udp.blobs_to_bboxes(blobs,dx=30,dy=40,fx=0.9,fy=1)
+		bboxes = udp.blobs_to_bboxes(blobs,dx=0,dy=0,fx=1,fy=1)
 
 		# Show mask in im
 		#im = im + np.expand_dims(mask,axis=-1)*100
+		print('---bboxes>',len(bboxes))
+		mask = np.dstack((mask,mask,mask))
+		mask *= 255
+		print(mask.shape)
 
-		for bbox in bboxes:
-			im = cv2.rectangle(im,pt1=(bbox[0],bbox[1]),pt2=(bbox[2],bbox[3]),color=(0,0,255),
-			thickness=3)
+		if True:
+			for bbox in bboxes:
+				#im = cv2.rectangle(im,pt1=(bbox[0],bbox[1]),pt2=(bbox[2],bbox[3]),color=(0,0,255),
+				#thickness=3)
+				mask = cv2.rectangle(mask,pt1=(bbox[0],bbox[1]),pt2=(bbox[2],bbox[3]),color=(255,0,0),
+				thickness=3)
 
-		fig1,ax1 = plt.subplots()
-		ax1.imshow(im[...,::-1])
-		#fig2,ax2 = plt.subplots()
-		#ax2.imshow(mask)
-		plt.show()
-		#plt.pause(0.2)
-		plt.close(fig1)
-		#plt.close(fig2)
+		#fig1,ax1 = plt.subplots()
+		#ax1.imshow(im[...,::-1])
+		fig2,ax2 = plt.subplots()
+		ax2.imshow(mask)
+		#plt.show()
+		plt.axis('off')
+		plt.savefig('/home/hectorsab/Documents/Tesis/people_bboxes/'+file,bbox_inches='tight')
+		plt.pause(0.1)
+		#plt.close(fig1)
+		plt.close(fig2)
 
 
 		if len(y)==0:
